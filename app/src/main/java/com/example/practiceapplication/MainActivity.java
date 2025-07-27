@@ -1,6 +1,7 @@
 package com.example.practiceapplication;
 
 import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -19,6 +20,9 @@ public class MainActivity extends AppCompatActivity {
 
     Dialog dDialog;
     ImageView ivAnimal;
+    SharedPreferences sharedPreferences;
+    Integer currentAnimalID;
+    Integer currentFoodID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +33,15 @@ public class MainActivity extends AppCompatActivity {
         //The screen stays awake while this activity is visible
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        sharedPreferences = getSharedPreferences("my_pref", 0);
+        currentAnimalID = sharedPreferences.getInt("current_animalID", R.drawable.panda);
         ivAnimal = findViewById(R.id.iv_animal);
+        ivAnimal.setImageResource(currentAnimalID);
     }
 
     public void startGame(View view){
-
+        GameView gameView = new GameView(this);
+        setContentView(gameView);
     }
 
     public void changeAnimal(View view){
@@ -45,15 +53,15 @@ public class MainActivity extends AppCompatActivity {
 
         //
         ArrayList<AnimalModel> animalModelList = new ArrayList<>();
-        animalModelList.add(new AnimalModel(R.drawable.monkey, "Monkey", 0));
-        animalModelList.add(new AnimalModel(R.drawable.elephant, "Elephant", 0));
-        animalModelList.add(new AnimalModel(R.drawable.giraffe, "Giraffe", 0));
-        animalModelList.add(new AnimalModel(R.drawable.hippo, "Hippo", 0));
-        animalModelList.add(new AnimalModel(R.drawable.panda, "Panda", 0));
-        animalModelList.add(new AnimalModel(R.drawable.penguin, "Penguin", 0));
-        animalModelList.add(new AnimalModel(R.drawable.pig, "Pig", 0));
-        animalModelList.add(new AnimalModel(R.drawable.rabbit, "Rabbit", 0));
-        animalModelList.add(new AnimalModel(R.drawable.snake, "Snake", 0));
+        animalModelList.add(new AnimalModel(R.drawable.monkey, "Monkey", R.drawable.banana));
+        animalModelList.add(new AnimalModel(R.drawable.elephant, "Elephant", R.drawable.watermelon));
+        animalModelList.add(new AnimalModel(R.drawable.giraffe, "Giraffe", R.drawable.leaf));
+        animalModelList.add(new AnimalModel(R.drawable.hippo, "Hippo", R.drawable.watermelon));
+        animalModelList.add(new AnimalModel(R.drawable.panda, "Panda", R.drawable.bamboo));
+        animalModelList.add(new AnimalModel(R.drawable.penguin, "Penguin", R.drawable.seed));
+        animalModelList.add(new AnimalModel(R.drawable.pig, "Pig", R.drawable.burger));
+        animalModelList.add(new AnimalModel(R.drawable.rabbit, "Rabbit", R.drawable.carrot));
+        animalModelList.add(new AnimalModel(R.drawable.snake, "Snake", R.drawable.rabbit_food));
 
         GridView gridView = dDialog.findViewById(R.id.gv_myGridView);
         gridView.setAdapter(new GridViewAdapter(MainActivity.this, animalModelList));
@@ -61,7 +69,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 AnimalModel animalModel = (AnimalModel) adapterView.getItemAtPosition(position);
-                ivAnimal.setImageResource(animalModel.getAnimalID());
+                currentAnimalID = animalModel.getAnimalID();
+                currentFoodID = animalModel.getFoodID();
+                ivAnimal.setImageResource(currentAnimalID);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt("current_animalID", currentAnimalID);
+                editor.putInt("current_foodID", currentFoodID);
+                editor.commit();
+
                 dDialog.cancel();
             }
         });
