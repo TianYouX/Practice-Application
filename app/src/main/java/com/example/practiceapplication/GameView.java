@@ -112,7 +112,7 @@ public class GameView extends View {
                 life--;
                 foods.get(i).resetPosition();
                 if(life == 0){
-                    Intent intent = new Intent(context, MainActivity.class);
+                    Intent intent = new Intent(context, GameOverActivity.class);
                     intent.putExtra("scores", scores);
                     context.startActivity(intent);
                     ((Activity) context).finish();
